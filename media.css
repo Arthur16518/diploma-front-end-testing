@@ -34,10 +34,11 @@
     }
     .home-wrapper {
         justify-content: flex-end;
-        margin-top: -10vw;
+        margin-top: -15vw;
+        grid-row-gap: 5vh;
     }
     .tree-img-wrapper {
-        top: 5%;
+        top: 2%;
         left: -20%;
         right: 0;
         bottom: auto;
