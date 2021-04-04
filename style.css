@@ -127,3 +127,8 @@ button:active {
 .home-buttons button img {
     margin-right: 10%;
 }
+
+svg {
+    width: 1rem;
+    height: 1rem;
+}
