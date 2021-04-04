@@ -80,7 +80,7 @@ button:active {
     width: 40vw;
     justify-content: center;
     margin: 0 10vw;
-    grid-row-gap: 7vh;
+    row-gap: 7vh;
 }
 
 #tree-img {
@@ -117,7 +117,7 @@ button:active {
 
 .home-buttons {
     display: flex;
-    grid-column-gap: 2vw;
+    column-gap: 2vw;
 }
 
 .home-buttons img {
@@ -126,9 +126,4 @@ button:active {
 
 .home-buttons button img {
     margin-right: 10%;
-}
-
-svg {
-    width: 1rem;
-    height: 1rem;
 }
