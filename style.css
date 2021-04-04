@@ -31,7 +31,7 @@ html {
 
 html, body {
     position: relative;
-    overflow: hidden;
+    overflow-x: hidden;
 }
 
 h1 {
