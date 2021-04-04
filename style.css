@@ -1,16 +1,19 @@
 @font-face {
     font-family: 'Inter Regular';
-    src: url('fonts/Inter-Regular.woff2') format('woff2');
+    src: url('fonts/Inter-Regular.woff2') format('woff2'),
+    url('fonts/Inter-Regular.woff') format('woff');
 }
 
 @font-face {
     font-family: 'Inter Bold';
-    src: url('fonts/Inter-Bold.woff2') format('woff2');
+    src: url('fonts/Inter-Bold.woff2') format('woff2'),
+    url('fonts/Inter-Bold.woff') format('woff');
 }
 
 @font-face {
     font-family: 'Inter SemiBold';
-    src: url('fonts/Inter-SemiBold.woff2') format('woff2');
+    src: url('fonts/Inter-SemiBold.woff2') format('woff2'),
+    url('fonts/Inter-SemiBold.woff') format('woff');
 }
 
 * {
@@ -98,7 +101,7 @@ button:active {
 }
 
 .green-gradient-bg:hover {
-    box-shadow: 0 0 15px #0A8270;
+    box-shadow: 0 0 15px #7CFF6B;
 }
 
 .orange-gradient-bg {
