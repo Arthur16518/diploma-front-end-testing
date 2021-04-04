@@ -1,0 +1,123 @@
+@font-face {
+    font-family: 'Inter Regular';
+    src: url('fonts/Inter-Regular.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Inter Bold';
+    src: url('fonts/Inter-Bold.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Inter SemiBold';
+    src: url('fonts/Inter-SemiBold.woff2') format('woff2');
+}
+
+* {
+    padding: 0;
+    margin: 0;
+}
+
+html {
+    font-family: 'Inter Regular';
+    font-size: 16pt;
+    background-color: #261B4A;
+    color: #FFE2FF;
+    overflow: hidden;
+}
+
+html, body {
+    position: relative;
+    overflow: hidden;
+}
+
+h1 {
+    font-size: 2.5rem;
+    font-family: 'Inter Bold';
+}
+
+h2 {
+    font-family: 'Inter SemiBold';
+}
+
+body {
+    height: 100vh;
+}
+
+button {
+    font-family: 'Inter SemiBold';
+    padding: 0.4rem 1.2rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 1rem;
+    transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    color: white;
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    justify-items: center;
+}
+
+button:focus {
+    outline: none;
+}
+
+button:active {
+    transform: scale(0.9);
+}
+
+.home-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 40vw;
+    justify-content: center;
+    margin: 0 10vw;
+    grid-row-gap: 7vh;
+}
+
+#tree-img {
+    height: 110vh;
+    width: auto;
+    transform: rotateZ(-15deg);
+    filter: blur(10px);
+}
+
+.tree-img-wrapper {
+    position: absolute;
+    top: -5vh;
+    right: -5vh;
+    animation-delay: 0.5s;
+    animation-duration: 1s;
+    z-index: -1;
+}
+
+.green-gradient-bg {
+    background: linear-gradient(20deg, #0A8270, #7CFF6B);
+}
+
+.green-gradient-bg:hover {
+    box-shadow: 0 0 15px #0A8270;
+}
+
+.orange-gradient-bg {
+    background: linear-gradient(20deg, #F3682B, #F7DA2D);
+}
+
+.orange-gradient-bg:hover {
+    box-shadow: 0 0 15px #F3682B;
+}
+
+.home-buttons {
+    display: flex;
+    grid-column-gap: 2vw;
+}
+
+.home-buttons img {
+    height: 1rem;
+}
+
+.home-buttons button img {
+    margin-right: 10%;
+}
