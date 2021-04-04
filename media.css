@@ -34,7 +34,7 @@
     }
     .home-wrapper {
         justify-content: flex-end;
-        margin-top: -15vw;
+        margin-top: -10vh;
         grid-row-gap: 5vh;
     }
     .tree-img-wrapper {
