@@ -80,6 +80,7 @@ button:active {
     width: 40vw;
     justify-content: center;
     margin: 0 10vw;
+    -webkit-row-gap: 7vh;
     row-gap: 7vh;
 }
 
@@ -117,6 +118,7 @@ button:active {
 
 .home-buttons {
     display: flex;
+    -webkit-column-gap: 2vw;
     column-gap: 2vw;
 }
 
