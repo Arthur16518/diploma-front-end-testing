@@ -7,9 +7,8 @@
         justify-content: flex-start;
         margin-top: 10vw;
     }
-    .home-buttons {
-        -webkit-column-gap: 5vw;
-        column-gap: 5vw;
+    .home-buttons > *:not(:nth-child(1)) {
+        margin-left: 5vw;
     }
     .tree-img-wrapper {
         top: auto;
@@ -27,6 +26,9 @@
     html {
         font-size: 16pt;
     }
+    button {
+        font-size: 1.2rem;
+    }
 }
 
 @media screen and (orientation:portrait) and (max-width:430px) {
@@ -35,12 +37,13 @@
     }
     .home-wrapper {
         justify-content: flex-end;
-        margin-top: -10vh;
-        -webkit-row-gap: 5vh;
-        row-gap: 5vh;
+        margin-top: -15vh;
+    }
+    .home-wrapper > *:not(:nth-child(1)) {
+        margin-top: 5vh;
     }
     .tree-img-wrapper {
-        top: 2%;
+        top: -5%;
         left: -20%;
         right: 0;
         bottom: auto;
@@ -59,6 +62,6 @@
 
 @media screen and (orientation:landscape) and (max-height:320px) {
     html {
-        font-size: 12pt;
+        font-size: 10pt;
     }
 }
