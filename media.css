@@ -12,7 +12,7 @@
     }
     .tree-img-wrapper {
         top: auto;
-        left: 0;
+        left: -5%;
         right: 0;
         bottom: 0;
     }
@@ -37,10 +37,10 @@
     }
     .home-wrapper {
         justify-content: flex-end;
-        margin-top: -15vh;
+        margin-top: -18vh;
     }
     .home-wrapper > *:not(:nth-child(1)) {
-        margin-top: 5vh;
+        margin-top: 3vh;
     }
     .tree-img-wrapper {
         top: -5%;
@@ -49,7 +49,7 @@
         bottom: auto;
     }
     #tree-img {
-        height: 60vh;
+        height: 55vh;
         width: auto;
     }
 }
