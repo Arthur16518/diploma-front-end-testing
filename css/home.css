@@ -1,0 +1,64 @@
+body {
+    height: 100vh;
+}
+
+.home-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 40vw;
+    justify-content: center;
+    margin: 0 10vw;
+}
+
+    .home-wrapper > *:not(:nth-child(1)) {
+        margin-top: 7vh;
+    }
+
+#tree-img {
+    height: 110vh;
+    width: auto;
+    transform: rotateZ(-15deg);
+    filter: blur(10px);
+}
+
+.tree-img-wrapper {
+    position: absolute;
+    top: -5vh;
+    right: -5vh;
+    animation-delay: 0.5s;
+    animation-duration: 1s;
+    z-index: -1;
+}
+
+.green-gradient-bg {
+    background: linear-gradient(20deg, #0A8270, #7CFF6B);
+}
+
+    .green-gradient-bg:hover {
+        box-shadow: 0 0 15px #7CFF6B;
+    }
+
+.orange-gradient-bg {
+    background: linear-gradient(20deg, #F3682B, #F7DA2D);
+}
+
+    .orange-gradient-bg:hover {
+        box-shadow: 0 0 15px #F3682B;
+    }
+
+.home-buttons {
+    display: flex;
+}
+
+    .home-buttons > *:not(:nth-child(1)) {
+        margin-left: 2vw;
+    }
+
+    .home-buttons img {
+        height: 1rem;
+    }
+
+    .home-buttons button img {
+        margin-right: 10%;
+    }

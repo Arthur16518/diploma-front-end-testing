@@ -1,0 +1,64 @@
+@font-face {
+    font-family: 'Inter Regular';
+    src: url('../fonts/Inter-Regular.woff2') format('woff2'), url('../fonts/Inter-Regular.woff') format('woff'), url('../fonts/Inter-Regular.otf') format('otf');
+}
+
+@font-face {
+    font-family: 'Inter Bold';
+    src: url('../fonts/Inter-Bold.woff2') format('woff2'), url('../fonts/Inter-Bold.woff') format('woff'), url('../fonts/Inter-Bold.otf') format('otf');
+}
+
+@font-face {
+    font-family: 'Inter SemiBold';
+    src: url('../fonts/Inter-SemiBold.woff2') format('woff2'), url('../fonts/Inter-SemiBold.woff') format('woff'), url('../fonts/Inter-SemiBold.otf') format('otf');
+}
+
+* {
+    padding: 0;
+    margin: 0;
+}
+
+html {
+    font-family: 'Inter Regular';
+    font-size: 16pt;
+    background-color: #261B4A;
+    color: #FFE2FF;
+    overflow: hidden;
+}
+
+html, body {
+    position: relative;
+    overflow-x: hidden;
+}
+
+h1 {
+    font-size: 2.5rem;
+    font-family: 'Inter Bold';
+}
+
+h2 {
+    font-family: 'Inter SemiBold';
+}
+
+button {
+    font-family: 'Inter SemiBold';
+    padding: 0.5rem 1.4rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5rem;
+    transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    color: white;
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    justify-items: center;
+}
+
+    button:focus {
+        outline: none;
+    }
+
+    button:active {
+        transform: scale(0.9);
+    }

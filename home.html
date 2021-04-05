@@ -1,32 +1,33 @@
-<!DOCTYPE html>
-<html lang="ru">
+﻿<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Интерактивный учебник по Git</title>
-    <link rel="stylesheet" href="animate.min.css">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="media.css">
+    <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    <link rel="stylesheet" href="css/animate.min.css">
+    <link rel="stylesheet" href="css/shared.css">
+    <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="css/media-home.css">
 </head>
 <body>
     <div class="home-wrapper">
         <h1 class="animate__animated animate__fadeInLeft">Интерактивный учебник по Git</h1>
         <div class="home-buttons animate__animated animate__fadeInLeft">
-            <button class="green-gradient-bg">
-                <img src="learn-img.png">
+            <button class="green-gradient-bg" onclick="window.location.href='/Lessons'">
+                <img src="img/learn-img.png">
                 Уроки
             </button>
             <button class="orange-gradient-bg">
-                <img src="sandbox-img.png">
+                <img src="img/sandbox-img.png">
                 Песочница
             </button>
         </div>
         <div class="animate__animated animate__fadeIn tree-img-wrapper">
-            <img src="tree.png" id="tree-img">
+            <img src="img/tree.png" id="tree-img">
         </div>
     </div>
-    <script src="jquery-3.6.0.min.js"></script>
-    <script src="home.js"></script>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="js/home.js"></script>
 </body>
 </html>
