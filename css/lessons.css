@@ -1,0 +1,57 @@
+.blobs-bg {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: rgba(38, 27, 74, 0.05);
+    filter: blur(15px);
+    z-index: -1;
+}
+
+@keyframes full-rotation {
+    0% {
+        transform: rotateZ(0deg) scale(1);
+    }
+    100% {
+        transform: rotateZ(360deg) scale(1.5);
+    }
+}
+
+.blob {
+    border-radius: 100vh;
+    background: radial-gradient(circle at 0% 0%, #7CFF6B, #0A8270);
+    /* animation: full-rotation 5s ease-in-out infinite alternate, bounceIn 1s 0s; */
+    position: absolute;
+}
+
+.blob:nth-of-type(1) {
+    width: 10vh;
+    height: 10vh;
+    left: 5vh;
+    bottom: 50vh;
+}
+.blob:nth-of-type(2) {
+    width: 25vh;
+    height: 25vh;
+    left: 20vh;
+    bottom: 10vh;
+}
+.blob:nth-of-type(3) {
+    width: 15vh;
+    height: 15vh;
+    left: 35vh;
+    bottom: 25vh;
+}
+.blob:nth-of-type(4) {
+    width: 30vh;
+    height: 30vh;
+    top: -2vh;
+    right: 2vh;
+}
+.blob:nth-of-type(5) {
+    width: 10vh;
+    height: 10vh;
+    top: 40vh;
+    right: 5vh;
+}
