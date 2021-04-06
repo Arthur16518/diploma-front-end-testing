@@ -13,11 +13,6 @@
     src: url('../fonts/Inter-SemiBold.woff2') format('woff2'), url('../fonts/Inter-SemiBold.woff') format('woff'), url('../fonts/Inter-SemiBold.otf') format('otf');
 }
 
-@font-face {
-    font-family: 'Inconsolata Regular';
-    src: url('../fonts/Inconsolata-Regular.ttf');
-}
-
 * {
     padding: 0;
     margin: 0;
@@ -70,7 +65,7 @@ button {
     }
 
 .code {
-    font-family: 'Inconsolata Regular';
+    font-family: 'Consolas', 'Inconsolata', 'Courier New', Courier, monospace;
 }
 
 .clickable {
