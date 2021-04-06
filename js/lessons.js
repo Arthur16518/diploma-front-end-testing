@@ -4,13 +4,22 @@ for (let i of blobs) {
     i.style.animation = `bounceIn 1s 0s, full-rotation 7s ${delay}s ease-in-out infinite alternate`;
 }
 
+$('.lessons-section').hide();
+const sections = document.querySelectorAll('.lessons-section');
+for (let i = 0; i < sections.length; i++) {
+    setTimeout(() => {
+        $(sections[i]).show(300);
+    }, i*50);
+}
+
+
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 function getRandomFloat(min, max) {
     return Math.random() * (max - min) + min;
-  }
+}
 
 document.onmousemove = function (e) {
     if (!prevPos)
@@ -42,3 +51,4 @@ function getDir(now, previous) {
     else
         return -1;
 }
+

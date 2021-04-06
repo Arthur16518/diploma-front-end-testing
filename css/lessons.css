@@ -55,3 +55,56 @@
     top: 40vh;
     right: 5vh;
 }
+
+.lessons-wrapper section {
+    padding: 6vh 30vw 6vh 10vw;
+}
+
+html {
+    font-size: 18pt;
+    overflow-y: auto;
+}
+
+.top-section {
+    font-size: 1.2rem;
+}
+
+h1 {
+    margin-bottom: 4vh;
+}
+
+.lessons-section {
+    display: grid;
+    grid-template-columns: 3vw auto;
+    grid-template-rows: 1fr 1fr;
+    column-gap: 5vw;
+    row-gap: 3vh;
+    border-top: 1px solid #FFE2FF80;
+}
+
+.lessons-section:hover {
+    transition: background-color 0.2s;
+    background-color: #FFE2FF15;
+    cursor: pointer;
+}
+
+.section-num {
+    font-size: 1.6rem;
+    grid-row-start: 1;
+    grid-row-end: 3;
+}
+
+span.code {
+    background-color: #FFE2FF4D;
+    border-radius: 0.3rem;
+    padding: 0.05rem 0.2rem;
+    margin: 0 0.1rem;
+}
+
+#back-button {
+    width: 1.5rem;
+    height: 1.5rem;
+    position: absolute;
+    top: 8.5vh;
+    left: 8vh;
+}

@@ -13,6 +13,11 @@
     src: url('../fonts/Inter-SemiBold.woff2') format('woff2'), url('../fonts/Inter-SemiBold.woff') format('woff'), url('../fonts/Inter-SemiBold.otf') format('otf');
 }
 
+@font-face {
+    font-family: 'Inconsolata Regular';
+    src: url('../fonts/Inconsolata-Regular.ttf') format('ttf');
+}
+
 * {
     padding: 0;
     margin: 0;
@@ -37,6 +42,7 @@ h1 {
 }
 
 h2 {
+    font-size: 1.6rem;
     font-family: 'Inter SemiBold';
 }
 
@@ -59,6 +65,18 @@ button {
         outline: none;
     }
 
-    button:active {
+    button:active, .clickable:active {
         transform: scale(0.9);
     }
+
+.code {
+    font-family: 'Inconsolata Regular';
+}
+
+.clickable {
+    transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.clickable:hover {
+    cursor: pointer;
+}
