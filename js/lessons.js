@@ -8,8 +8,32 @@ $('.lessons-section').hide();
 const sections = document.querySelectorAll('.lessons-section');
 for (let i = 0; i < sections.length; i++) {
     setTimeout(() => {
-        $(sections[i]).show(300);
+        $(sections[i]).slideToggle(300);
     }, i*50);
+}
+
+$('.lessons').hide();
+let openedSection;
+$('.lessons-section').click(function () {
+    if (openedSection && openedSection != this)
+        $(openedSection.querySelector('.lessons')).slideUp(200);
+    $(this.querySelector('.lessons')).slideToggle(200);
+    openedSection = this;
+});
+
+$('.lesson-circle, .lesson-label').click(function (e) {
+    e.stopPropagation();
+})
+
+const lessons = document.querySelectorAll('.lessons');
+for (let i of lessons) {
+    i.onwheel = (e) => {
+        e.preventDefault();
+        let direction = getDir(e.deltaY, 0);
+        //i.scrollLeft += direction*40;
+        for (let j = 1; j <= direction*e.deltaY; j++)
+            i.scrollLeft += direction;
+    }
 }
 
 

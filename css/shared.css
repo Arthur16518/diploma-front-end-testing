@@ -24,6 +24,7 @@ html {
     background-color: #261B4A;
     color: #FFE2FF;
     overflow: hidden;
+    user-select: none;
 }
 
 html, body {

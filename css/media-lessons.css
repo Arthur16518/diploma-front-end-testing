@@ -1,0 +1,102 @@
+@media screen and (orientation:portrait) and (max-width:1024px) {
+    html {
+        font-size: 16pt;
+    }
+    .lessons-wrapper section {
+        padding: 5vh 5vw 5vh 5vw;
+    }
+    .lessons-section {
+        column-gap: 5vw;
+    }
+    #back-button {
+        left: 5vw;
+        top: 8vw;
+        width: 2rem;
+        height: 2rem;
+    }
+    h1 {
+        padding-left: 3.5rem;
+    }
+    .lessons {
+        grid-auto-columns: 15vw;
+    }
+}
+
+@media screen and (orientation:portrait) and (max-width:430px) {
+    html {
+        font-size: 12pt;
+    }
+    h1 {
+        margin-bottom: 2vh;
+    }
+    .lessons-wrapper section {
+        padding: 3vh 5vw 3vh 5vw;
+    }
+    .blob:nth-of-type(1) {
+        width: 5vh;
+        height: 5vh;
+    }
+    .blob:nth-of-type(2) {
+        width: 15vh;
+        height: 15vh;
+    }
+    .blob:nth-of-type(3) {
+        width: 9vh;
+        height: 9vh;
+    }
+    .blob:nth-of-type(4) {
+        width: 20vh;
+        height: 20vh;
+    }
+    .blob:nth-of-type(5) {
+        width: 5vh;
+        height: 5vh;
+    }
+    .lessons-section {
+        column-gap: 5vw;
+        row-gap: 3vh;
+    }
+    .lessons-section .description {
+        grid-column-start: 1;
+        grid-column-end: 3;
+    }
+    .section-num {
+        grid-row-end: 2;
+    }
+    .lessons {
+        grid-auto-columns: 30vw;
+        column-gap: 3vw;
+        width: 90vw;
+        grid-column-start: 1;
+    }
+}
+
+@media screen and (orientation:portrait) and (max-width:320px) {
+    html {
+        font-size: 9pt;
+    }
+}
+
+@media screen and (orientation:landscape) and (max-height:430px) {
+    html {
+        font-size: 12pt;
+    }
+    .lessons-wrapper section {
+        padding: 6vh 15vw 6vh 10vw;
+    }
+    .lessons {
+        grid-auto-columns: 15vw;
+    }
+    #back-button {
+        left: 3vw;
+        top: 4vw;
+        width: 2rem;
+        height: 2rem;
+    }
+}
+
+@media screen and (orientation:landscape) and (max-height:320px) {
+    html {
+        font-size: 10pt;
+    }
+}
