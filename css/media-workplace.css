@@ -1,0 +1,14 @@
+@media screen and (orientation:portrait) and (max-width:1024px) {
+    html {
+        font-size: 16pt;
+    }
+    .command-prompt-div > * {
+        width: 85vw;
+    }
+}
+
+@media screen and (orientation:portrait) and (max-width:430px) {
+    html {
+        font-size: 14pt;
+    }
+}

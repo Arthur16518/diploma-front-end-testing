@@ -1,0 +1,78 @@
+.tree-wrapper {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    overflow: auto;
+}
+
+.command-prompt-div {
+    position: fixed;
+    bottom: 1.5vh;
+    left: 0;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.command-prompt-div > * {
+    width: 50vw;
+}
+
+#command-prompt {
+    background: none;
+    border: none;
+    font-size: 1rem;
+    width: inherit;
+}
+
+#command-prompt:focus {
+    outline: none;
+}
+
+.prompt-wrapper {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1vh;
+    background-color: #FFE2FFE6;
+    border: none;
+    padding: 0.3rem 0.5rem;
+    border-radius: 0.5rem;
+    color: black;
+}
+
+.prompt-wrapper::before, .commands p::before {
+    content: '$';
+    color: inherit;
+    margin-right: 0.5rem;
+    font-family: 'Consolas', 'Inconsolata', 'Courier New', monospace;
+}
+
+.commands {
+    margin-bottom: 0.4rem;
+    max-height: 19vh;
+    height: fit-content;
+    overflow-y: scroll;
+    opacity: 0.7;
+    user-select: text;
+}
+
+.commands::-webkit-scrollbar {
+    display: none;
+}
+
+#perform-button {
+    transform: rotateZ(90deg);
+    height: 1rem;
+    filter: brightness(0);
+}
+
+svg circle, svg g text {
+    cursor: pointer;
+}
+
+svg g, svg path {
+    animation: fadeIn 1s;
+}
