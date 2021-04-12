@@ -48,7 +48,7 @@ svgObjects.set('defs', svg.defs());
 svg = svg.group();
 svgObjects.set('local', svg);
 
-const filter = `<filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+const filter = `<filter id="shadow" x="-50%" y="-50%" width="200%" height="200%" filterRes="1">
       <feGaussianBlur result="blurOut" in="offOut" stdDeviation="10" />
       <feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
     </filter>`;
