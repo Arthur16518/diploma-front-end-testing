@@ -48,13 +48,14 @@ svgObjects.set('defs', svg.defs());
 svg = svg.group();
 svgObjects.set('local', svg);
 
-const filter = `<filter id="shadow" x="-50%" y="-50%" width="200%" height="200%" filterRes="1">
-      <feGaussianBlur result="blurOut" in="offOut" stdDeviation="10" />
-      <feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
-    </filter>`;
-document.querySelector('defs').insertAdjacentHTML('beforeend', filter);
+// const filter = `<filter id="shadow" x="-50%" y="-50%" width="200%" height="200%" filterRes="1">
+//       <feGaussianBlur result="blurOut" in="offOut" stdDeviation="10" />
+//       <feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
+//     </filter>`;
+// document.querySelector('defs').insertAdjacentHTML('beforeend', filter);
 
-svgObjects.set('circle', svgObjects.get('defs').circle(defaults.radius).id('circle-def').cx(0).cy(0).attr({filter: 'url(#shadow)'}));
+//svgObjects.set('circle', svgObjects.get('defs').circle(defaults.radius).id('circle-def').cx(0).cy(0).attr({filter: 'url(#shadow)'}));
+svgObjects.set('circle', svgObjects.get('defs').circle(defaults.radius).id('circle-def').cx(0).cy(0));
 svgObjects.set('text', svgObjects.get('defs').text('').id('text-def'));
 let c1 = drawCommit('c1');
 let c2 = drawCommit('c2', 170);
