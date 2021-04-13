@@ -63,7 +63,7 @@ connectCommits(c1, c2);
 console.log(svgObjects);
 
 function drawCommit(name, cy = defaults.radius, cx = window.innerWidth/2, fill = randomGradient(), parent = svg, set = svgObjects) {
-    let group = parent.group();
+    let group = parent.group().id(name);
     let gradient = parent.gradient('linear', function(add) {
         add.stop(0, fill[0]);
         add.stop(1, fill[1]);
