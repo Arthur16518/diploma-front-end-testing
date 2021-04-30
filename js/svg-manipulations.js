@@ -37,7 +37,12 @@ let defaults = {
     stroke: '#FFE2FF',
     strokeWidth: 2,
     radius: 50,
-    fontSize: '16pt'
+    fontSize: '16pt',
+    borderRadius: 10,
+    verticalPadding: 2,
+    horizontalPadding: 7,
+    textOffset: 2,
+    commitYOffset: 150
 };
 
 
@@ -57,9 +62,11 @@ svgObjects.set('local', svg);
 //svgObjects.set('circle', svgObjects.get('defs').circle(defaults.radius).id('circle-def').cx(0).cy(0).attr({filter: 'url(#shadow)'}));
 svgObjects.set('circle', svgObjects.get('defs').circle(defaults.radius).id('circle-def').cx(0).cy(0));
 svgObjects.set('text', svgObjects.get('defs').text('').id('text-def'));
-let c1 = drawCommit('c1');
-let c2 = drawCommit('c2', 170);
-connectCommits(c1, c2);
+svgObjects.set('head-mark-def', svgObjects.get('defs').circle(10).id('head-mark-def').fill(defaults.fill));
+// let c1 = drawCommit('c1');
+// let c2 = drawCommit('c2', 170);
+// connectCommits(c1, c2);
+// drawBranchName(c1, 'master');
 console.log(svgObjects);
 
 function drawCommit(name, cy = defaults.radius, cx = window.innerWidth/2, fill = randomGradient(), parent = svg, set = svgObjects) {
@@ -100,6 +107,31 @@ function connectCommits(commit1, commit2, parent = svg, set = svgObjects) {
     return path;
 }
 
+function drawBranchName(targetCommit, branchName, parent = svg, set = svgObjects) {
+    let group = parent.group().id('branch-'+branchName);
+    let text = group.text(branchName).font({
+        fill: defaults.fill, 
+        size: defaults.fontSize, 
+        family: `'Consolas', 'Inconsolata', 'Courier New', monospace`,
+        anchor: 'middle'
+    }).x(targetCommit.cx() + targetCommit.width() / 2 - defaults.textOffset)
+    .cy(targetCommit.cy()  - targetCommit.height() / 2 + defaults.textOffset);
+    const bbox = text.bbox();
+    let rect = group.rect().fill(`url(#${set.get('gradient-'+branchName)})`)
+        .rx(defaults.borderRadius)
+        .ry(defaults.borderRadius)
+        .width(bbox.width + defaults.horizontalPadding* 2)
+        .height(bbox.height + defaults.verticalPadding * 2)
+        .cx(text.cx())
+        .cy(text.cy())
+        .fill(defaults.fill)
+        .opacity(0.3)
+        .backward();
+    group.back();
+    set.set(group.id(), group);
+    return group;
+}
+
 function randomGradient() {
     let i = getRandomInt(0, 29);
     return gradients[i];
@@ -107,4 +139,18 @@ function randomGradient() {
 
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function movePointer(targetGroup) {
+    let headCircle = svgObjects.get('head-circle');
+    if (headCircle)
+        headCircle.remove();
+    headCircle = targetGroup.use('head-mark-def')
+        .cx(targetGroup.x() + targetGroup.width() + defaults.horizontalPadding)
+        .cy(targetGroup.cy());
+    svgObjects.set('head-circle', headCircle);
+}
+
+function newBranchGradient() {
+    
 }
