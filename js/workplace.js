@@ -90,6 +90,7 @@ $('#perform-button').click(function () {
 });
 
 function recognizeCommand(commandStr) {
+    commandStr.trim();
     addCommandToList(commandStr);
     let commandParts = commandStr.split(' ');
     if (commandStr.length < 2 || commandParts[0] != 'git') {
@@ -156,11 +157,12 @@ function commit(commandBody = []) {
     const name = GenerateName();
     let newCommit = new Commit(name, message);
     newCommit.commitBranch = currentBranch;
-    let cx = headCommit.commitSvg.cx();
-    if (headCommit.children.length > 0) {
-        cx = findAvailableCx(headCommit.children);
+    let cx = headCommit.commitSvg.cx(), cy = headCommit.commitSvg.cy() + defaults.commitYOffset;
+    if (headCommit.children.length > 0 || elementByPoint(cx, cy) != 'svg') {
+        cx = findAvailablePosition(cx, cy);
     }
-    let commitSvg = drawCommit(name, newCommit.commitBranch.branchName, headCommit.commitSvg.cy() + defaults.commitYOffset, cx);
+
+    let commitSvg = drawCommit(name, newCommit.commitBranch.branchName, cy, cx);
     newCommit.parents.push(headCommit);
     headCommit.children.push(newCommit);
     connectCommits(headCommit.commitSvg, commitSvg);
@@ -176,13 +178,31 @@ function commit(commandBody = []) {
     return newCommit;
 }
 
-function findAvailableCx(nearCommits) {
-    let maxCx = 0;
-    for (let item of nearCommits) {
-        if (item.commitSvg.cx() > maxCx)
-            maxCx = item.commitSvg.cx();
+function findAvailablePosition(cx, cy) {
+    if (elementByPoint(cx, cy) == 'svg')
+        return cx;
+    else {
+        let left = findLeftPos(cx - defaults.commitXOffset, cy);
+        let right = findRightPos(cx + defaults.commitXOffset, cy);
+        if (right - cx <= cx - left)
+            return right;
+        else
+            return left;
     }
-    return maxCx + defaults.commitXOffset;
+}
+
+function findLeftPos(cx, cy) {
+    if (elementByPoint(cx, cy) == 'svg')
+        return cx;
+    else
+        return findLeftPos(cx - defaults.commitXOffset, cy);
+}
+
+function findRightPos(cx, cy) {
+    if (elementByPoint(cx, cy) == 'svg')
+        return cx;
+    else
+        return findRightPos(cx + defaults.commitXOffset, cy);
 }
 
 function init(commandBody) {
@@ -229,6 +249,10 @@ function branch(commandBody) {
         pushText('На сайте не поддерживаются данные аргументы');
         return;
     }
+    if (getBranchByName(branchName)) {
+        pushText('Ветка с таким именем уже существует');
+        return;
+    }
 
     let newBranch = new Branch(branchName);
     newBranchGradient(branchName);
@@ -245,7 +269,12 @@ function branch(commandBody) {
 }
 
 function elementByPoint(x, y) {
-    return document.elementFromPoint(x, y).localName;
+    try {
+        return document.elementFromPoint(x, y).localName;
+    }
+    catch {
+        return 'svg';
+    }
 }
 
 function checkout(commandBody) {
@@ -269,6 +298,10 @@ function checkout(commandBody) {
     }
     else {
         pushText('На сайте не поддерживаются данные аргументы');
+        return;
+    }
+    if (!target) {
+        pushText('Неверный аргумент команды');
         return;
     }
 

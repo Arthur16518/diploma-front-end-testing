@@ -99,7 +99,7 @@ function connectCommits(commit1, commit2, parent = svg, set = svgObjects) {
     let x1 = commit1.cx();
     let y1 = commit1.cy() + commit1.height() / 2;
     let x2 = commit2.cx();
-    let y2 = commit2.cy() - commit2.height() / 2
+    let y2 = commit2.cy() - commit2.height() / 2;
     let path = parent.path(`M${x1} ${y1} C ${x1} ${y2}, ${x2} ${y1}, ${x2} ${y2}`)
         .fill('none')
         .stroke({
