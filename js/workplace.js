@@ -41,6 +41,8 @@ function pushText(text) {
     scrollToBottom(commands);
 }
 
+pushText(navigator.userAgent);
+
 function performCommand() {
     const cmdPrompt = document.querySelector('#command-prompt');
     pushText(cmdPrompt.value);
