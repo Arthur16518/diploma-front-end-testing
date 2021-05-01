@@ -13,7 +13,6 @@ const gradients = [
     ['#BE93C5', '#7BC6CC'],
     ['#bdc3c7', '#2c3e50'],
     ['#ffd89b', '#19547b'],
-    ['#fceabb', '#f8b500'],
     ['#64f38c', '#f79d00'],
     ['#ef473a', '#cb2d3e'],
     ['#a8e063', '#56ab2f'],
@@ -38,6 +37,7 @@ let defaults = {
     strokeWidth: 2,
     radius: 50,
     fontSize: '16pt',
+    smallFontSize: '12pt',
     borderRadius: 10,
     verticalPadding: 2,
     horizontalPadding: 7,
@@ -173,7 +173,7 @@ function getXForBranchName(targetCommit) {
 }
 
 function randomGradient() {
-    let i = getRandomInt(0, 29);
+    let i = getRandomInt(0, gradients.length - 1);
     return gradients[i];
 }
 

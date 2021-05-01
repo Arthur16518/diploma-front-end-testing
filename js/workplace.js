@@ -1,6 +1,6 @@
 let headCommit = null; // stores Commit object
 newBranchGradient('HEAD');
-let commits = [], branches = [];
+let commits = [], branches = []; // restricted for changing the order of items
 let currentBranch = null; // stores Branch object
 
 class Commit {
@@ -116,6 +116,9 @@ function recognizeCommand(commandStr) {
         case 'merge':
             merge(commandBody);
             break;
+        case 'rebase':
+            rebase(commandBody);
+            break;
         default:
             pushText(`Команда git ${commandParts[1]} не поддерживается`);
     }
@@ -138,7 +141,7 @@ function checkIsHeadExists() {
     return true;
 }
 
-function commit(commandBody = []) {
+function commit(commandBody = [], name = GenerateName()) {
     if (!checkIsHeadExists()) {
         return;
     }
@@ -159,7 +162,6 @@ function commit(commandBody = []) {
         return;
     }
 
-    const name = GenerateName();
     let newCommit = new Commit(name, message);
     newCommit.commitBranch = currentBranch;
     let cx = headCommit.commitSvg.cx(), cy = headCommit.commitSvg.cy() + defaults.commitYOffset;
@@ -371,7 +373,7 @@ function merge(commandBody) {
         pushText('Изменения из данного коммита уже присутствуют');
         return;
     }
-    if (isChildForParent(headCommit, target)) {
+    if (isChildToParent(headCommit, target)) {
         moveBranch(headCommit.commitBranch, target);
         pushText('Произошел fast forward');
         return;
@@ -399,14 +401,14 @@ function isParentToChild(childCommit, parentCommit) {
     return result;
 }
 
-function isChildForParent(parentCommit, childCommit) {
+function isChildToParent(parentCommit, childCommit) {
     if (parentCommit.children.length == 0)
         return false;
     if (parentCommit.children.indexOf(childCommit) != -1)
         return true;
     let result = false;
     for (let child of parentCommit.children) {
-        result = result || isChildForParent(child, childCommit);
+        result = result || isChildToParent(child, childCommit);
         if (result)
             return result;
     }
@@ -423,4 +425,59 @@ function moveBranch(branch, targetCommit) {
     targetCommit.parents.concat(branch.lastCommit.parents);
     branch.lastCommit = targetCommit;
     headCommit = targetCommit;
+}
+
+function rebase(commandBody) {
+    if (!checkIsHeadExists()) {
+        return;
+    }
+    if (commandBody.length != 1) {
+        pushText('Команда git rebase должна иметь 1 аргумент');
+        return;
+    }
+    let target = getBranchByName(commandBody[0]);
+    if (!target)
+        target = getCommitByName(commandBody[0]);
+    if (!target) {
+        pushText('Данный коммит или ветка не найдены');
+        return;
+    }
+    if (target instanceof Branch)
+        target = target.lastCommit;
+    if (isChildToParent(headCommit, target)) {
+        moveBranch(headCommit.commitBranch, target);
+        pushText('Произошел fast forward');
+        return;
+    }
+    let commonParent = findCommonParent(headCommit, target);
+    let commitsToRebase = collectCommitsFromParentToChild(commonParent, headCommit);
+    let commitsBetweenParentAndTarget = collectCommitsFromParentToChild(commonParent, target);
+    commitsBetweenParentAndTarget = commitsBetweenParentAndTarget.map(value => value.commitName);
+    commitsToRebase = commitsToRebase.filter(value => commitsBetweenParentAndTarget.indexOf(value.commitName+`'`) == -1);
+    let rebasedCommits = [];
+    headCommit = target;
+    for (let i of commitsToRebase) {
+        let rebaseCommit = commit([], i.commitName+`'`);
+        rebaseCommit.commitSvg.node.querySelector('text').attributes.getNamedItem('font-size').value = defaults.smallFontSize;
+        rebasedCommits.push(rebaseCommit);
+    }
+}
+
+function findCommonParent(commit1, commit2) {
+    const i1 = commits.indexOf(commit1), i2 = commits.indexOf(commit2);
+    let i = i1 < i2 ? i1 : i2;
+    for (i; i >= 0; i--) {
+        if (isParentToChild(commit1, commits[i]) && isParentToChild(commit2, commits[i]))
+            return commits[i];
+    }
+    return null;
+}
+
+function collectCommitsFromParentToChild(parentCommit, childCommit) {
+    let i = commits.indexOf(parentCommit), end = commits.indexOf(childCommit), result = [];
+    for (i++; i <= end; i++) {
+        if (isChildToParent(parentCommit, commits[i]) && isParentToChild(childCommit, commits[i]) || commits[i] == childCommit)
+            result.push(commits[i]);
+    }
+    return result;
 }
