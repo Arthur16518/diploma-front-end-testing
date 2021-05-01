@@ -1,8 +1,9 @@
-let headPointer = null; // stores Commit object
+let headCommit = null; // stores Commit object
 let commits = [], branches = [];
 
 class Commit {
-    parentCommit // Commit object
+    parents = [] // Commit objects
+    children = [] // Commit objects
     commitName
     commitMessage
     commitBranch // Branch object
@@ -17,9 +18,7 @@ class Commit {
 class Branch {
     branchName
     lastCommit // Commit object
-    branchColor // id of svg fill
     branchNameSvg
-    branchFillSvg
 
     constructor (branchName) {
         this.branchName = branchName;
@@ -69,12 +68,15 @@ function recognizeCommand(commandStr) {
         case 'commit':
             commit(commandBody);
             break;
+        case 'branch':
+            branch(commandBody);
+            break;
         default:
             pushText(`Команда git ${commandParts[1]} не поддерживается`);
     }
 }
 
-function GenerateName(length = 2) {
+function GenerateName(length = 3) {
     const set = 'abcdefghijklmnopqrstuvwxyz0123456789';
     let result = '';
     for (let i = 0; i < length; i++) {
@@ -83,9 +85,16 @@ function GenerateName(length = 2) {
     return result;
 }
 
-function commit(commandBody = []) {
-    if (headPointer == null) {
+function checkIsHeadExists() {
+    if (headCommit == null) {
         pushText('Сначала создайте репозиторий с помощью git init');
+        return false;
+    }
+    return true;
+}
+
+function commit(commandBody = []) {
+    if (!checkIsHeadExists()) {
         return;
     }
 
@@ -107,14 +116,30 @@ function commit(commandBody = []) {
 
     const name = GenerateName();
     let newCommit = new Commit(name, message);
-    newCommit.commitBranch = headPointer.commitBranch;
-    let commitSvg = drawCommit(name, headPointer.commitSvg.cy() + defaults.commitYOffset, headPointer.commitSvg.cx());
-    connectCommits(headPointer.commitSvg, commitSvg);
+    newCommit.commitBranch = headCommit.commitBranch;
+    let cx = headCommit.commitSvg.cx();
+    if (headCommit.children.length > 0) {
+        cx = findAvailableCx(headCommit.children);
+    }
+    let commitSvg = drawCommit(name, newCommit.commitBranch.branchName, headCommit.commitSvg.cy() + defaults.commitYOffset, cx);
+    newCommit.parents.push(headCommit);
+    headCommit.children.push(newCommit);
+    connectCommits(headCommit.commitSvg, commitSvg);
     newCommit.commitSvg = commitSvg;
-    newCommit.commitBranch.branchNameSvg.animate().dy(defaults.commitYOffset);
+    newCommit.commitBranch.branchNameSvg.animate().cy(getCyForBranchName(newCommit.commitSvg));
+    newCommit.parentCommit = headCommit;
     commits.push(newCommit);
-    headPointer = newCommit;
+    headCommit = newCommit;
     return newCommit;
+}
+
+function findAvailableCx(nearCommits) {
+    let maxCx = 0;
+    for (let item of nearCommits) {
+        if (item.commitSvg.cx() > maxCx)
+            maxCx = item.commitSvg.cx();
+    }
+    return maxCx + defaults.commitXOffset;
 }
 
 function init(commandBody) {
@@ -122,14 +147,15 @@ function init(commandBody) {
         pushText('Команда git init не требует аргументов');
         return;
     }
-    if (headPointer != null) {
+    if (headCommit != null) {
         pushText('Репозиторий создан. Команда git init не может быть выполнена еще раз');
         return;
     }
 
     const name = GenerateName();
     let newCommit = new Commit(name);
-    let commitSvg = drawCommit(name);
+    newBranchGradient('main');
+    let commitSvg = drawCommit(name, 'main');
     newCommit.commitSvg = commitSvg;
     commits.push(newCommit);
     let main = new Branch('main');
@@ -137,8 +163,41 @@ function init(commandBody) {
     main.branchNameSvg = branchName;
     main.lastCommit = newCommit;
     newCommit.commitBranch = main;
-    main.branchFillSvg = newBranchGradient();
     branches.push(main);
-    headPointer = newCommit;
+    headCommit = newCommit;
     movePointer(branchName);
+}
+
+function branch(commandBody) {
+    if (!checkIsHeadExists()) {
+        return;
+    }
+
+    let branchName = '';
+    if (commandBody.length == 1) {
+        branchName = commandBody[0];
+    }
+    else if (commandBody.length == 0) {
+        pushText('Не было указано имя овой ветки: git branch [имя ветки]');
+        return;
+    }
+    else if (commandBody.length > 0) {
+        pushText('На сайте не поддерживаются данные аргументы');
+        return;
+    }
+
+    let newBranch = new Branch(branchName);
+    newBranchGradient(branchName);
+    let branchNameSvg = drawBranchName(headCommit.commitSvg, branchName);
+    let cx = branchNameSvg.cx(), cy = branchNameSvg.cy();
+    while (elementByPoint(cx, cy) != 'svg') {
+        cy += branchNameSvg.height() + defaults.verticalPadding;
+    }
+    branchNameSvg.animate().cy(cy);
+    newBranch.branchNameSvg = branchNameSvg;
+    branches.push(newBranch);
+}
+
+function elementByPoint(x, y) {
+    return document.elementFromPoint(x, y).localName;
 }

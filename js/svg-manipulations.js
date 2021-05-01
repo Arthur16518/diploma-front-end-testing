@@ -42,7 +42,8 @@ let defaults = {
     verticalPadding: 2,
     horizontalPadding: 7,
     textOffset: 2,
-    commitYOffset: 150
+    commitYOffset: 150,
+    commitXOffset: 150
 };
 
 
@@ -69,13 +70,13 @@ svgObjects.set('head-mark-def', svgObjects.get('defs').circle(10).id('head-mark-
 // drawBranchName(c1, 'master');
 console.log(svgObjects);
 
-function drawCommit(name, cy = defaults.radius, cx = window.innerWidth/2, fill = randomGradient(), parent = svg, set = svgObjects) {
+function drawCommit(name, branchName, cy = defaults.radius, cx = window.innerWidth/2, fill = randomGradient(), parent = svg, set = svgObjects) {
     let group = parent.group().id(name);
     let gradient = parent.gradient('linear', function(add) {
         add.stop(0, fill[0]);
         add.stop(1, fill[1]);
     }).transform({rotate: 45});
-    group.use('circle-def').fill(gradient).cx(cx).cy(cy);
+    group.use('circle-def').fill(`url(#${branchName}-fill)`).cx(cx).cy(cy);
     group.text(name).font({
         fill: defaults.fill, 
         size: defaults.fontSize, 
@@ -114,8 +115,8 @@ function drawBranchName(targetCommit, branchName, parent = svg, set = svgObjects
         size: defaults.fontSize, 
         family: `'Consolas', 'Inconsolata', 'Courier New', monospace`,
         anchor: 'middle'
-    }).x(targetCommit.cx() + targetCommit.width() / 2 - defaults.textOffset)
-    .cy(targetCommit.cy()  - targetCommit.height() / 2 + defaults.textOffset);
+    }).x(getXForBranchName(targetCommit))
+    .cy(getCyForBranchName(targetCommit));
     const bbox = text.bbox();
     let rect = group.rect().fill(`url(#${set.get('gradient-'+branchName)})`)
         .rx(defaults.borderRadius)
@@ -130,6 +131,14 @@ function drawBranchName(targetCommit, branchName, parent = svg, set = svgObjects
     group.back();
     set.set(group.id(), group);
     return group;
+}
+
+function getCyForBranchName(targetCommit) {
+    return targetCommit.cy()  - targetCommit.height() / 2 + defaults.textOffset;
+}
+
+function getXForBranchName(targetCommit) {
+    return targetCommit.cx() + targetCommit.width() / 2 - defaults.textOffset;
 }
 
 function randomGradient() {
@@ -151,6 +160,10 @@ function movePointer(targetGroup) {
     svgObjects.set('head-circle', headCircle);
 }
 
-function newBranchGradient() {
-    
+function newBranchGradient(branchName) {
+    const fill = randomGradient();
+    let gradient = svgObjects.get('defs').gradient('linear', function(add) {
+        add.stop(0, fill[0]);
+        add.stop(1, fill[1]);
+    }).transform({rotate: 45}).id(branchName+'-fill');
 }
