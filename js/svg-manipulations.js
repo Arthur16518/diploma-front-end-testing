@@ -41,9 +41,10 @@ let defaults = {
     borderRadius: 10,
     verticalPadding: 2,
     horizontalPadding: 7,
-    textOffset: 2,
+    textOffset: 6,
     commitYOffset: 150,
-    commitXOffset: 150
+    commitXOffset: 200,
+    headMarkOffset: 3
 };
 
 
@@ -64,6 +65,7 @@ svgObjects.set('local', svg);
 svgObjects.set('circle', svgObjects.get('defs').circle(defaults.radius).id('circle-def').cx(0).cy(0));
 svgObjects.set('text', svgObjects.get('defs').text('').id('text-def'));
 svgObjects.set('head-mark-def', svgObjects.get('defs').circle(10).id('head-mark-def').fill(defaults.fill));
+svgObjects.set('detached-head', createHead(svgObjects.get('local')));
 // let c1 = drawCommit('c1');
 // let c2 = drawCommit('c2', 170);
 // connectCommits(c1, c2);
@@ -115,13 +117,12 @@ function drawBranchName(targetCommit, branchName, parent = svg, set = svgObjects
         size: defaults.fontSize, 
         family: `'Consolas', 'Inconsolata', 'Courier New', monospace`,
         anchor: 'middle'
-    }).x(getXForBranchName(targetCommit))
-    .cy(getCyForBranchName(targetCommit));
+    });
     const bbox = text.bbox();
-    let rect = group.rect().fill(`url(#${set.get('gradient-'+branchName)})`)
+    let rect = group.rect()
         .rx(defaults.borderRadius)
         .ry(defaults.borderRadius)
-        .width(bbox.width + defaults.horizontalPadding* 2)
+        .width(bbox.width + defaults.horizontalPadding * 2)
         .height(bbox.height + defaults.verticalPadding * 2)
         .cx(text.cx())
         .cy(text.cy())
@@ -129,7 +130,34 @@ function drawBranchName(targetCommit, branchName, parent = svg, set = svgObjects
         .opacity(0.3)
         .backward();
     group.back();
+    group.x(getXForBranchName(targetCommit)).cy(getCyForBranchName(targetCommit));
     set.set(group.id(), group);
+    return group;
+}
+
+function createHead(parent = svg) {
+    let group = parent.group().id('detached-head').hide();
+    let text = group.text('HEAD').font({
+        fill: defaults.fill,
+        size: defaults.fontSize,
+        family: `'Consolas', 'Inconsolata', 'Courier New', monospace`,
+        anchor: 'middle',
+        style: 'italic',
+        weight: 'bold'
+    });
+    const bbox = text.bbox();
+    let rect = group.rect()
+        .rx(defaults.borderRadius)
+        .ry(defaults.borderRadius)
+        .width(bbox.width + defaults.horizontalPadding * 2)
+        .height(bbox.height + defaults.verticalPadding * 2)
+        .cx(text.cx())
+        .cy(text.cy())
+        .fill(defaults.fill)
+        .opacity(0.3)
+        .backward();
+    group.back();
+    group.cx(0).cy(0);
     return group;
 }
 
@@ -138,7 +166,7 @@ function getCyForBranchName(targetCommit) {
 }
 
 function getXForBranchName(targetCommit) {
-    return targetCommit.cx() + targetCommit.width() / 2 - defaults.textOffset;
+    return targetCommit.x() + targetCommit.width() - defaults.textOffset;
 }
 
 function randomGradient() {
@@ -151,12 +179,16 @@ function getRandomInt(min, max) {
 }
 
 function movePointer(targetGroup) {
+    if (svgObjects.get('detached-head')) {
+        attachHead();
+    }
     let headCircle = svgObjects.get('head-circle');
     if (headCircle)
         headCircle.remove();
+    const cy = targetGroup.cy() - defaults.headMarkOffset;
     headCircle = targetGroup.use('head-mark-def')
         .cx(targetGroup.x() + targetGroup.width() + defaults.horizontalPadding)
-        .cy(targetGroup.cy());
+        .cy(cy);
     svgObjects.set('head-circle', headCircle);
 }
 
@@ -166,4 +198,22 @@ function newBranchGradient(branchName) {
         add.stop(0, fill[0]);
         add.stop(1, fill[1]);
     }).transform({rotate: 45}).id(branchName+'-fill');
+}
+
+function moveHead(targetGroup) {
+    let head = detachHead();
+    head.animate().x(targetGroup.x() - head.width() - defaults.horizontalPadding).cy(targetGroup.cy());
+}
+
+function detachHead() {
+    let headCircle = svgObjects.get('head-circle');
+    if (headCircle)
+        headCircle.remove();
+    let detachedHead = svgObjects.get('detached-head');
+    detachedHead.show();
+    return detachedHead;
+}
+
+function attachHead() {
+    svgObjects.get('detached-head').hide();
 }

@@ -1,5 +1,7 @@
 let headCommit = null; // stores Commit object
+newBranchGradient('HEAD');
 let commits = [], branches = [];
+let currentBranch = null; // stores Branch object
 
 class Commit {
     parents = [] // Commit objects
@@ -25,6 +27,8 @@ class Branch {
     }
 }
 
+branches.push(new Branch('HEAD'));
+
 function scrollToBottom(block) {
     block.scrollTop = block.scrollHeight;
 }
@@ -45,9 +49,40 @@ function performCommand() {
 scrollToBottom(document.querySelector('.commands'));
 document.getElementById('command-prompt').focus();
 
-$('#command-prompt').keypress(function (e) {
+let commandListPos = 0, commandList = [];
+function addCommandToList(commandStr) {
+    commandList.unshift(commandStr);
+    commandListPos = 0;
+}
+
+function putPreviousCommand() {
+    const commandPrompt = document.getElementById('command-prompt');
+    if (commandList.length == 0)
+        return;
+    if (commandPrompt.value != '')
+        commandListPos++;
+    if (commandListPos >= commandList.length)
+        commandListPos = commandList.length - 1;
+    commandPrompt.value = commandList[commandListPos];
+}
+
+function putNextCommand() {
+    const commandPrompt = document.getElementById('command-prompt');
+    if (commandList.length == 0 || commandPrompt.value == '')
+        return;
+    commandListPos--;
+    if (commandListPos < 0)
+        commandListPos = 0;
+    commandPrompt.value = commandList[commandListPos];
+}
+
+$('#command-prompt').keydown(function (e) {
     if (e.key == 'Enter')
         performCommand();
+    else if (e.key == 'ArrowUp')
+        putPreviousCommand();
+    else if (e.key == 'ArrowDown')
+        putNextCommand();
 });
 
 $('#perform-button').click(function () {
@@ -55,6 +90,7 @@ $('#perform-button').click(function () {
 });
 
 function recognizeCommand(commandStr) {
+    addCommandToList(commandStr);
     let commandParts = commandStr.split(' ');
     if (commandStr.length < 2 || commandParts[0] != 'git') {
         pushText(`Команда "${commandStr}" не является git-командой`);
@@ -70,6 +106,9 @@ function recognizeCommand(commandStr) {
             break;
         case 'branch':
             branch(commandBody);
+            break;
+        case 'checkout':
+            checkout(commandBody);
             break;
         default:
             pushText(`Команда git ${commandParts[1]} не поддерживается`);
@@ -116,7 +155,7 @@ function commit(commandBody = []) {
 
     const name = GenerateName();
     let newCommit = new Commit(name, message);
-    newCommit.commitBranch = headCommit.commitBranch;
+    newCommit.commitBranch = currentBranch;
     let cx = headCommit.commitSvg.cx();
     if (headCommit.children.length > 0) {
         cx = findAvailableCx(headCommit.children);
@@ -126,8 +165,12 @@ function commit(commandBody = []) {
     headCommit.children.push(newCommit);
     connectCommits(headCommit.commitSvg, commitSvg);
     newCommit.commitSvg = commitSvg;
-    newCommit.commitBranch.branchNameSvg.animate().cy(getCyForBranchName(newCommit.commitSvg));
+    if (newCommit.commitBranch.branchName == 'HEAD')
+        moveHead(newCommit.commitSvg);
+    else
+        newCommit.commitBranch.branchNameSvg.animate().x(getXForBranchName(newCommit.commitSvg)).cy(getCyForBranchName(newCommit.commitSvg));
     newCommit.parentCommit = headCommit;
+    newCommit.commitBranch.lastCommit = newCommit;
     commits.push(newCommit);
     headCommit = newCommit;
     return newCommit;
@@ -166,6 +209,7 @@ function init(commandBody) {
     branches.push(main);
     headCommit = newCommit;
     movePointer(branchName);
+    currentBranch = main;
 }
 
 function branch(commandBody) {
@@ -178,7 +222,7 @@ function branch(commandBody) {
         branchName = commandBody[0];
     }
     else if (commandBody.length == 0) {
-        pushText('Не было указано имя овой ветки: git branch [имя ветки]');
+        pushText('Не было указано имя новой ветки: git branch [имя ветки]');
         return;
     }
     else if (commandBody.length > 0) {
@@ -190,14 +234,68 @@ function branch(commandBody) {
     newBranchGradient(branchName);
     let branchNameSvg = drawBranchName(headCommit.commitSvg, branchName);
     let cx = branchNameSvg.cx(), cy = branchNameSvg.cy();
-    while (elementByPoint(cx, cy) != 'svg') {
-        cy += branchNameSvg.height() + defaults.verticalPadding;
-    }
+    if (currentBranch.branchName != 'HEAD')
+        while (elementByPoint(cx, cy) != 'svg') {
+            cy += branchNameSvg.height() + defaults.verticalPadding;
+        }
     branchNameSvg.animate().cy(cy);
     newBranch.branchNameSvg = branchNameSvg;
+    newBranch.lastCommit = headCommit;
     branches.push(newBranch);
 }
 
 function elementByPoint(x, y) {
     return document.elementFromPoint(x, y).localName;
+}
+
+function checkout(commandBody) {
+    if (!checkIsHeadExists()) {
+        return;
+    }
+    if (commandBody.length == 0) {
+        pushText('Команда git checkout должна иметь аргументы');
+        return;
+    }
+    let target;
+    if (commandBody.length == 2 && commandBody[0] == '-b') {
+        const branchName = commandBody[1];
+        branch([branchName]);
+        target = getBranchByName(branchName);
+    }
+    else if (commandBody.length == 1) {
+        target = getBranchByName(commandBody[0]);
+        if (!target)
+            target = getCommitByName(commandBody[0]);
+    }
+    else {
+        pushText('На сайте не поддерживаются данные аргументы');
+        return;
+    }
+
+    if (target instanceof Branch) {
+        movePointer(target.branchNameSvg);
+        headCommit = target.lastCommit;
+        currentBranch = target;
+    }
+    else {
+        moveHead(target.commitSvg);
+        headCommit = target;
+        currentBranch = getBranchByName('HEAD');
+    }
+}
+
+function getCommitByName(commitName) {
+    for (let item of commits) {
+        if (item.commitName == commitName)
+            return item;
+    }
+    return null;
+}
+
+function getBranchByName(branchName) {
+    for (let item of branches) {
+        if (item.branchName == branchName)
+            return item;
+    }
+    return null;
 }
