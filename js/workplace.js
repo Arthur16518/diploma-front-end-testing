@@ -28,6 +28,8 @@ class Branch {
 }
 
 branches.push(new Branch('HEAD'));
+$('#command-prompt').focus(() => $('.commands').removeClass('low-opacity'));
+$('#command-prompt').blur(() => $('.commands').addClass('low-opacity') );
 
 function scrollToBottom(block) {
     block.scrollTop = block.scrollHeight;
@@ -111,6 +113,9 @@ function recognizeCommand(commandStr) {
         case 'checkout':
             checkout(commandBody);
             break;
+        case 'merge':
+            merge(commandBody);
+            break;
         default:
             pushText(`Команда git ${commandParts[1]} не поддерживается`);
     }
@@ -171,10 +176,10 @@ function commit(commandBody = []) {
         moveHead(newCommit.commitSvg);
     else
         newCommit.commitBranch.branchNameSvg.animate().x(getXForBranchName(newCommit.commitSvg)).cy(getCyForBranchName(newCommit.commitSvg));
-    newCommit.parentCommit = headCommit;
     newCommit.commitBranch.lastCommit = newCommit;
     commits.push(newCommit);
     headCommit = newCommit;
+    scrollToBottom(document.getElementById('tree-wrapper'));
     return newCommit;
 }
 
@@ -269,12 +274,24 @@ function branch(commandBody) {
 }
 
 function elementByPoint(x, y) {
+    let svg = svgObjects.get('SVG');
+    if (svg.width() <= x)
+        svg.width(x + 2 * defaults.radius);
+    if (svg.height() <= y)
+        svg.height(y + 2 * defaults.radius);
+    let treeWrapper = document.getElementById('tree-wrapper');
+    treeWrapper.scrollTop = y;
+    y -= treeWrapper.scrollTop;
+    $('.command-prompt-div').hide();
+    let result;
     try {
-        return document.elementFromPoint(x, y).localName;
+        result = document.elementFromPoint(x, y).localName;
     }
     catch {
-        return 'svg';
+        result = 'svg';
     }
+    $('.command-prompt-div').show();
+    return result;
 }
 
 function checkout(commandBody) {
@@ -331,4 +348,79 @@ function getBranchByName(branchName) {
             return item;
     }
     return null;
+}
+
+function merge(commandBody) {
+    if (!checkIsHeadExists()) {
+        return;
+    }
+    if (commandBody.length != 1) {
+        pushText('Команда git merge должна иметь 1 аргумент');
+        return;
+    }
+    let target = getBranchByName(commandBody[0]);
+    if (!target)
+        target = getCommitByName(commandBody[0]);
+    if (!target) {
+        pushText('Данный коммит или ветка не найдены');
+        return;
+    }
+    if (target instanceof Branch)
+        target = target.lastCommit;
+    if (isParentToChild(headCommit, target)) {
+        pushText('Изменения из данного коммита уже присутствуют');
+        return;
+    }
+    if (isChildForParent(headCommit, target)) {
+        moveBranch(headCommit.commitBranch, target);
+        pushText('Произошел fast forward');
+        return;
+    }
+    let newCommit = commit();
+    while (newCommit.commitSvg.cy() <= target.commitSvg.cy()) {
+        newCommit.commitSvg.cy(newCommit.commitSvg.cy() + defaults.commitYOffset);
+    }
+    newCommit.parents.push(target);
+    target.children.push(newCommit);
+    connectCommits(target.commitSvg, newCommit.commitSvg);
+}
+
+function isParentToChild(childCommit, parentCommit) {
+    if (childCommit.parents.length == 0)
+        return false;
+    if (childCommit.parents.indexOf(parentCommit) != -1)
+        return true;
+    let result = false;
+    for (let parent of childCommit.parents) {
+        result = result || isParentToChild(parent, parentCommit);
+        if (result)
+            return result;
+    }
+    return result;
+}
+
+function isChildForParent(parentCommit, childCommit) {
+    if (parentCommit.children.length == 0)
+        return false;
+    if (parentCommit.children.indexOf(childCommit) != -1)
+        return true;
+    let result = false;
+    for (let child of parentCommit.children) {
+        result = result || isChildForParent(child, childCommit);
+        if (result)
+            return result;
+    }
+    return result;
+}
+
+function moveBranch(branch, targetCommit) {
+    let x = getXForBranchName(targetCommit.commitSvg), cy = getCyForBranchName(targetCommit.commitSvg);
+    let cx = x + (branch.branchNameSvg.width() / 2);
+    while (elementByPoint(cx, cy) != 'svg') {
+        cy += branch.branchNameSvg.height() + defaults.verticalPadding;
+    }
+    branch.branchNameSvg.animate().x(x).cy(cy);
+    targetCommit.parents.concat(branch.lastCommit.parents);
+    branch.lastCommit = targetCommit;
+    headCommit = targetCommit;
 }

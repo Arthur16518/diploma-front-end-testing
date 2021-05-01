@@ -76,3 +76,7 @@ svg circle, svg g text {
 svg g, svg path {
     animation: fadeIn 1s;
 }
+
+.low-opacity {
+    opacity: 0.2;
+}

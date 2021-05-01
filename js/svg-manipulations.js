@@ -87,6 +87,7 @@ function drawCommit(name, branchName, cy = defaults.radius, cx = window.innerWid
         weight: 'bold'
     }).cx(cx).cy(cy);
     set.set(name, group);
+    checkAndResizeForObject(group);
     return group;
 }
 
@@ -100,7 +101,8 @@ function connectCommits(commit1, commit2, parent = svg, set = svgObjects) {
     let y1 = commit1.cy() + commit1.height() / 2;
     let x2 = commit2.cx();
     let y2 = commit2.cy() - commit2.height() / 2;
-    let path = parent.path(`M${x1} ${y1} C ${x1} ${y2}, ${x2} ${y1}, ${x2} ${y2}`)
+    let middleYPoint = y1 + (y2 - y1) / 2;
+    let path = parent.path(`M${x1} ${y1} C ${x1} ${middleYPoint}, ${x2} ${middleYPoint}, ${x2} ${y2}`)
         .fill('none')
         .stroke({
             color: defaults.stroke,
@@ -132,6 +134,7 @@ function drawBranchName(targetCommit, branchName, parent = svg, set = svgObjects
     group.back();
     group.x(getXForBranchName(targetCommit)).cy(getCyForBranchName(targetCommit));
     set.set(group.id(), group);
+    checkAndResizeForObject(group);
     return group;
 }
 
@@ -216,4 +219,12 @@ function detachHead() {
 
 function attachHead() {
     svgObjects.get('detached-head').hide();
+}
+
+function checkAndResizeForObject(object) {
+    let svg = svgObjects.get('SVG');
+    if (object.cy() >= svg.node.clientHeight)
+        svg.height(object.cy() + 2 * defaults.radius);
+    if (object.cx() >= svg.node.clientWidth)
+        svg.width(object.cx() + 2 * defaults.radius);
 }
