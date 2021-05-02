@@ -453,6 +453,10 @@ function rebase(commandBody) {
         pushText('Произошел fast forward');
         return;
     }
+    if (isParentToChild(headCommit, target)) {
+        pushText('Изменения из данной ветки уже присутствуют');
+        return;
+    }
     let commonParent = findCommonParent(headCommit, target);
     let commitsToRebase = collectCommitsFromParentToChild(commonParent, headCommit);
     let commitsBetweenParentAndTarget = collectCommitsFromParentToChild(commonParent, target);
