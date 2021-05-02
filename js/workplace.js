@@ -489,3 +489,62 @@ function collectCommitsFromParentToChild(parentCommit, childCommit) {
     }
     return result;
 }
+
+function buildJSON() {
+    class CommitJson {
+        ownNumber // int
+        branchCreator // name of the creator branch
+        parentsNumbers = [] // array of int
+        constructor (ownNumber) {
+            this.ownNumber = ownNumber;
+        }
+    }
+    class BranchJson {
+        branchName // string
+        lastCommitNumber // int
+        constructor(branchName) {
+            this.branchName = branchName;
+        }
+    }
+    class ItemJson {
+        commits // array of CommitJson
+        branches // array of BranchJson
+        constructor(commits, branches) {
+            this.commits = commits;
+            this.branches = branches;
+        }
+    }
+    let commitsForJson = [];
+    for (let i = 0; i < commits.length; i++) {
+        let commitToPush = new CommitJson(i);
+        commitToPush.branchCreator = commits[i].commitBranch.branchName;
+        for (let j = 0; j < commits[i].parents.length; j++) {
+            let parentIndex = commits.indexOf(commits[i].parents[j]);
+            if (parentIndex == -1) {
+                console.log('error');
+                return;
+            }
+            else {
+                commitToPush.parentsNumbers.push(parentIndex);
+            }
+        }
+        commitsForJson.push(commitToPush);
+    }
+    let branchesForJson = [];
+    for (let i of branches) {
+        if (i.branchName == 'HEAD')
+            continue;
+        let branchToPush = new BranchJson(i.branchName);
+        let commitIndex = commits.indexOf(i.lastCommit);
+        if (commitIndex == -1) {
+            console.log('error');
+            return;
+        }
+        else {
+            branchToPush.lastCommitNumber = commitIndex;
+        }
+        branchesForJson.push(branchToPush);
+    }
+    let objects = new ItemJson(commitsForJson, branchesForJson);
+    return JSON.stringify(objects);
+}
