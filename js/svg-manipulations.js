@@ -44,7 +44,7 @@ let defaults = {
     textOffset: 6,
     commitYOffset: 150,
     commitXOffset: 200,
-    headMarkOffset: 3
+    headMarkOffset: 4
 };
 
 
