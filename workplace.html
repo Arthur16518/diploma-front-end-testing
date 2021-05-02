@@ -11,6 +11,12 @@
     <link rel="stylesheet" href="css/media-workplace.css">
 </head>
 <body>
+    <div class="controls">
+        <button class="transparent-back clickable" title="Назад" id="back-button"><img src="img/back-button.svg" alt="back"></button>
+        <button class="transparent-back clickable" title="Доступные команды" id="show-commands-button"><img src="img/question-button.svg" alt="back"></button>
+        <button class="transparent-back clickable" title="Просмотреть урок еще раз" id="show-lesson-button"><img src="img/book-button.svg" alt="back"></button>
+        <button class="transparent-back clickable" title="Задание" id="show-task-button"><img src="img/exclamation-button.svg" alt="back"></button>
+    </div>
     <div class="tree-wrapper" id="tree-wrapper"></div>
     <div class="command-prompt-div">
         <div class="commands code"></div>
@@ -19,7 +25,58 @@
             <img src="img/back-button.svg" alt="perform" id="perform-button" class="clickable">
         </div>
     </div>
+    <div class="overlay">
+        <div class="window" id="commands-window">
+            <img src="img/cross-button.svg" alt="close" class="close-button clickable">
+            <h2 class="title">Поддерживаемые команды</h2>
+            <ul>
+                <li><span class="code">git init</span> — создание репозитория</li>
+                <li><span class="code">git commit</span> — создание коммита
+                    <ul>
+                        <li><span class="code">git commit -m [сообщение]</span> — создание коммита с сообщением</li>
+                    </ul>
+                </li>
+                <li><span class="code">git branch [имя ветки]</span> — создание новой ветки</li>
+                <li><span class="code">git checkout [ссылка на ветку/коммит]</span> — переход к указанной ветке/коммиту
+                    <ul>
+                        <li><span class="code">git checkout -b [имя новой ветки]</span> — создание новой ветки и переход к ней</li>
+                    </ul>
+                </li>
+                <li><span class="code">git merge [ссылка на ветку/коммит]</span> — слияние с указанной веткой/коммитом</li>
+                <li><span class="code">git rebase [ссылка на ветку/коммит]</span> — перебазирование недостающих коммитов на целевую ветку/коммит</li>
+            </ul>
+        </div>
+        <div class="window lesson">
+            <img src="img/cross-button.svg" alt="close" class="close-button clickable">
+            <h2 class="title">Создание Git-репозитория</h2>
+            <div class="modules">
+                <img src="img/arrow-left.svg" alt="previous" class="pointer" id="previous-module">
+                <img src="img/arrow-left.svg" alt="next" class="rotate180 next-arrow pointer" id="next-module">
+                <div class="module">
+                    <p>Git — это самая популярная система контроля версий в мире.</p>
+                    <p>Система контроля версий — это система, записывающая изменения в файл или набор файлов в течение времени и позволяющая вернуться позже к определённой версии. Для контроля версий файлов чаще всего используется исходный код программного обеспечения, хотя на самом деле вы можете использовать контроль версий практически для любых типов файлов.</p>
+                    <p>Система контроля версий позволяет вернуть файлы к состоянию, в котором они были до изменений, вернуть проект к исходному состоянию, увидеть изменения, увидеть, кто последний менял что-то и вызвал проблему, кто поставил задачу и когда и многое другое.</p>
+                </div>
+                <div class="module">
+                    <p>С помощью Git вы можете откатить свой проект до более старой версии, сравнивать, анализировать или сливать свои изменения в репозиторий. Репозиторием называют хранилище вашего кода и историю его изменений. Git работает локально и все ваши репозитории хранятся в определенных папках на жестком диске.</p>
+                    <p>Так же ваши репозитории можно хранить и в интернете. Обычно для этого используют три сервиса:</p>
+                    <ul>
+                        <li><a href="http://github.com">GitHub</a></li>
+                        <li><a href="https://bitbucket.org">Bitbucket</a></li>
+                        <li><a href="https://gitlab.com">GitLab</a></li>
+                    </ul>
+                </div>
+                <div class="module">
+                    <p>Чтобы создать Git-репозиторий, необходимо перейти через командную строку в нужный каталог (папку или директорию) и выполнить команду <span class="code">git init</span></p>
+                    <p>Эта команда создаёт в текущем каталоге новый подкаталог с именем .git, содержащий все необходимые файлы репозитория — структуру Git репозитория. На этом этапе ваш проект ещё не находится под версионным контролем.</p>
+                    <p>Чтобы добавить под версионный контроль файл, необходимо выполнить команду <span class="code">git add [имя файла]</span> или <span class="code">git add *</span> для добавления всех файлов. Но так как этот сайт не работает с реальными файлами, то эту команду после создания репозитория выполнять не нужно.</p>
+                </div>
+                <button id="to-task-button">К заданию!</button>
+            </div>
+        </div>
+    </div>
     <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="js/workplace-controls.js"></script>
     <script src="js/svg.min.js"></script>
     <script src="js/svg-manipulations.js"></script>
     <script src="js/workplace.js"></script>

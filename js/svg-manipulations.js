@@ -228,3 +228,8 @@ function checkAndResizeForObject(object) {
     if (object.cx() >= svg.node.clientWidth)
         svg.width(object.cx() + 2 * defaults.radius);
 }
+
+$('g').click(function() {
+    alert(this);
+    console.log(this);
+});

@@ -176,14 +176,10 @@ function commit(commandBody = [], name = GenerateName()) {
     headCommit.children.push(newCommit);
     connectCommits(headCommit.commitSvg, commitSvg);
     newCommit.commitSvg = commitSvg;
-    //
-    let x = getXForBranchName(newCommit.commitSvg);
-    cy = getCyForBranchName(newCommit.commitSvg);
-    //
     if (newCommit.commitBranch.branchName == 'HEAD')
         moveHead(newCommit.commitSvg);
     else
-        newCommit.commitBranch.branchNameSvg.animate().x(x).cy(cy);
+        newCommit.commitBranch.branchNameSvg.animate().x(getXForBranchName(newCommit.commitSvg)).cy(getCyForBranchName(newCommit.commitSvg));
     newCommit.commitBranch.lastCommit = newCommit;
     commits.push(newCommit);
     headCommit = newCommit;
@@ -298,6 +294,8 @@ function elementByPoint(x, y) {
     catch {
         result = 'svg';
     }
+    if (result == 'body')
+        result = 'svg';
     $('.command-prompt-div').show();
     return result;
 }

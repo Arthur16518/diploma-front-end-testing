@@ -5,6 +5,7 @@
     top: 0;
     left: 0;
     overflow: auto;
+    z-index: 5;
 }
 
 .command-prompt-div {
@@ -15,6 +16,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    z-index: 10;
 }
 
 .command-prompt-div > * {
@@ -69,7 +71,8 @@
     filter: brightness(0);
 }
 
-svg circle, svg g text {
+svg g text, svg g use {
+    pointer-events: stroke;
     cursor: pointer;
 }
 
@@ -79,4 +82,127 @@ svg g, svg path {
 
 .low-opacity {
     opacity: 0.2;
+}
+
+.controls {
+    z-index: 10;
+    padding: 2vh;
+    width: min-content;
+    display: inline-flex;
+    flex-direction: column;
+    row-gap: 1vh;
+}
+
+.controls * {
+    z-index: 10;
+}
+
+.controls button {
+    padding: 0;
+    animation: bounceIn 1s;
+}
+
+.overlay {
+    z-index: 100;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.window {
+    padding: 2vh;
+    background-color: rgba(255, 226, 255, 0.29);
+    border-radius: 3vh;
+    overflow: hidden;
+    height: fit-content;
+    width: 50vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+.window .title {
+    font-size: 1.3rem;
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 4vh;
+}
+
+.window .code {
+    padding: 0.1rem 0.3rem;
+    border-radius: 0.3rem;
+    border: 1px solid #261B4A;
+}
+
+#commands-window {
+    font-size: 0.8rem;
+}
+
+#commands-window li {
+    list-style: none;
+    line-height: 2;
+}
+
+#commands-window li li{
+    margin-left: 1rem;
+}
+
+.close-button {
+    position: absolute;
+    top: 2vh;
+    right: 2vh;
+    width: 4vh;
+}
+
+.title img {
+    width: 5vh;
+}
+
+.modules {
+    display: grid;
+    grid-template-columns: 2rem auto 2rem;
+    align-items: center;
+    justify-content: center;
+}
+
+.module {
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 1;
+    grid-row-end: 2;
+    line-height: 1.5;
+    font-size: 0.9rem;
+}
+
+.module > * {
+    margin-bottom: 0.7rem;
+}
+
+.next-arrow {
+    justify-self: flex-end;
+}
+
+#previous-module {
+    grid-column-start: 1;
+    grid-column-end: 2;
+}
+
+#next-module {
+    grid-column-start: 3;
+    grid-column-end: 4;
+}
+
+#to-task-button {
+    width: fit-content;
+    grid-column-start: 1;
+    grid-column-end: 4;
+    background: linear-gradient(20deg, #0A8270, #7CFF6B);
+    justify-self: center;
 }
