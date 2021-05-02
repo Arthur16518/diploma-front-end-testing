@@ -5,10 +5,23 @@
     .command-prompt-div > * {
         width: 85vw;
     }
+    .window {
+        width: 80vw;
+    }
 }
 
 @media screen and (orientation:portrait) and (max-width:430px) {
     html {
         font-size: 14pt;
+    }
+    .window {
+        width: 100vw;
+        font-size: 0.7rem;
+    }
+    .title {
+        max-width: 70vw;
+    }
+    .module {
+        font-size: 0.8rem;
     }
 }
