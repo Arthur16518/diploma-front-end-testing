@@ -22,6 +22,11 @@ $('#show-lesson-button').click(function() {
     $('.lesson').slideToggle();
 });
 
+$('#show-task-button').click(function() {
+    $('.overlay').fadeIn();
+    $('.task').slideToggle();
+});
+
 $('#next-module').click(function () {
     switchModule(currentModule + 1);
 });
@@ -46,3 +51,8 @@ function switchModule(moduleToShow) {
     else
         $('#next-module').show();
 }
+
+$('#to-task-button').click(function() {
+    $('.lesson').slideToggle();
+    setTimeout(() => $('.task').slideToggle(), 350);
+});

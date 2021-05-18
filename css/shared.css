@@ -97,3 +97,8 @@ span .code {
 .pointer:hover {
     cursor: pointer;
 }
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #FFE2FF #FFE2FF43;
+}

@@ -62,7 +62,7 @@ svgObjects.set('local', svg);
 // document.querySelector('defs').insertAdjacentHTML('beforeend', filter);
 
 //svgObjects.set('circle', svgObjects.get('defs').circle(defaults.radius).id('circle-def').cx(0).cy(0).attr({filter: 'url(#shadow)'}));
-svgObjects.set('circle', svgObjects.get('defs').circle(defaults.radius).id('circle-def').cx(0).cy(0));
+//svgObjects.set('circle', svgObjects.get('defs').circle(defaults.radius).id('circle-def').cx(0).cy(0));
 svgObjects.set('text', svgObjects.get('defs').text('').id('text-def'));
 svgObjects.set('head-mark-def', svgObjects.get('defs').circle(10).id('head-mark-def').fill(defaults.fill));
 svgObjects.set('detached-head', createHead(svgObjects.get('local')));
@@ -78,7 +78,8 @@ function drawCommit(name, branchName, cy = defaults.radius, cx = window.innerWid
         add.stop(0, fill[0]);
         add.stop(1, fill[1]);
     }).transform({rotate: 45});
-    group.use('circle-def').fill(`url(#${branchName}-fill)`).cx(cx).cy(cy);
+    //group.use('circle-def').fill(`url(#${branchName}-fill)`).cx(cx).cy(cy);
+    group.circle(defaults.radius).id('circle-def').fill(`url(#${branchName}-fill)`).cx(cx).cy(cy);
     group.text(name).font({
         fill: defaults.fill, 
         size: defaults.fontSize, 
@@ -88,6 +89,7 @@ function drawCommit(name, branchName, cy = defaults.radius, cx = window.innerWid
     }).cx(cx).cy(cy);
     set.set(name, group);
     checkAndResizeForObject(group);
+    svgObjects.get('detached-head').cx(parent.cx()).cy(parent.cy());
     return group;
 }
 
@@ -160,7 +162,7 @@ function createHead(parent = svg) {
         .opacity(0.3)
         .backward();
     group.back();
-    group.cx(0).cy(0);
+    group.cx(parent.cx()).cy(parent.cy());
     return group;
 }
 
@@ -229,7 +231,7 @@ function checkAndResizeForObject(object) {
         svg.width(object.cx() + 2 * defaults.radius);
 }
 
-$('g').click(function() {
+$('.tree-img-wrapper svg g').click(function() {
     alert(this);
     console.log(this);
 });

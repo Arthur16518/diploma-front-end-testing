@@ -41,8 +41,6 @@ function pushText(text) {
     scrollToBottom(commands);
 }
 
-pushText(navigator.userAgent);
-
 function performCommand() {
     const cmdPrompt = document.querySelector('#command-prompt');
     pushText(cmdPrompt.value);
@@ -124,6 +122,7 @@ function recognizeCommand(commandStr) {
         default:
             pushText(`Команда git ${commandParts[1]} не поддерживается`);
     }
+    try { checkTree(); } catch { return; }
 }
 
 function GenerateName(length = 3) {
@@ -176,6 +175,7 @@ function commit(commandBody = [], name = GenerateName()) {
     headCommit.children.push(newCommit);
     connectCommits(headCommit.commitSvg, commitSvg);
     newCommit.commitSvg = commitSvg;
+    $(commitSvg.node).click(() => { recognizeCommand(`git checkout ${name}`) });
     if (newCommit.commitBranch.branchName == 'HEAD')
         moveHead(newCommit.commitSvg);
     else
@@ -228,10 +228,12 @@ function init(commandBody) {
     let newCommit = new Commit(name);
     newBranchGradient('main');
     let commitSvg = drawCommit(name, 'main');
+    $(commitSvg.node).click(() => { recognizeCommand(`git checkout ${name}`) });
     newCommit.commitSvg = commitSvg;
     commits.push(newCommit);
     let main = new Branch('main');
     let branchName = drawBranchName(commitSvg, 'main');
+    $(branchName.node).click(() => { recognizeCommand(`git checkout main`) });
     main.branchNameSvg = branchName;
     main.lastCommit = newCommit;
     newCommit.commitBranch = main;
@@ -247,7 +249,11 @@ function branch(commandBody) {
     }
 
     let branchName = '';
-    if (commandBody.length == 1) {
+    if (commandBody.length == 3 && commandBody[0] == '-f' && commandBody[1] != 'HEAD') {
+        const movingBranch = getBranchByName(commandBody[1]);
+        const target= getCommandTarget(commandBody[2]);
+    }
+    else if (commandBody.length == 1) {
         branchName = commandBody[0];
     }
     else if (commandBody.length == 0) {
@@ -266,8 +272,9 @@ function branch(commandBody) {
     let newBranch = new Branch(branchName);
     newBranchGradient(branchName);
     let branchNameSvg = drawBranchName(headCommit.commitSvg, branchName);
+    $(branchNameSvg.node).click(() => { recognizeCommand(`git checkout ${branchName}`) });
     let cx = branchNameSvg.cx(), cy = branchNameSvg.cy();
-    if (currentBranch.branchName != 'HEAD')
+    //if (currentBranch.branchName != 'HEAD')
         while (elementByPoint(cx, cy) != 'svg') {
             cy += branchNameSvg.height() + defaults.verticalPadding;
         }
@@ -312,12 +319,10 @@ function checkout(commandBody) {
     if (commandBody.length == 2 && commandBody[0] == '-b') {
         const branchName = commandBody[1];
         branch([branchName]);
-        target = getBranchByName(branchName);
+        target = getCommandTarget(branchName);
     }
     else if (commandBody.length == 1) {
-        target = getBranchByName(commandBody[0]);
-        if (!target)
-            target = getCommitByName(commandBody[0]);
+        target = getCommandTarget(commandBody[0]);
     }
     else {
         pushText('На сайте не поддерживаются данные аргументы');
@@ -382,10 +387,18 @@ function merge(commandBody) {
         pushText('Произошел fast forward');
         return;
     }
+    const initialHead = headCommit;
     let newCommit = commit();
     while (newCommit.commitSvg.cy() <= target.commitSvg.cy()) {
         newCommit.commitSvg.cy(newCommit.commitSvg.cy() + defaults.commitYOffset);
     }
+    let connectionPath = svgObjects.get(initialHead.commitName+'-'+newCommit.commitName);
+    connectionPath.remove();
+    connectCommits(initialHead.commitSvg, newCommit.commitSvg);
+    if (newCommit.commitBranch.branchName == 'HEAD')
+        moveHead(newCommit.commitSvg);
+    else
+        newCommit.commitBranch.branchNameSvg.animate().x(getXForBranchName(newCommit.commitSvg)).cy(getCyForBranchName(newCommit.commitSvg));
     newCommit.parents.push(target);
     target.children.push(newCommit);
     connectCommits(target.commitSvg, newCommit.commitSvg);
@@ -509,11 +522,14 @@ function buildJSON() {
     class ItemJson {
         commits // array of CommitJson
         branches // array of BranchJson
-        constructor(commits, branches) {
+        headCommitNumber // number of head commit
+        constructor(commits, branches, headCommitNumber) {
             this.commits = commits;
             this.branches = branches;
+            this.headCommitNumber = headCommitNumber;
         }
     }
+    let headNumber = -1;
     let commitsForJson = [];
     for (let i = 0; i < commits.length; i++) {
         let commitToPush = new CommitJson(i);
@@ -529,6 +545,9 @@ function buildJSON() {
             }
         }
         commitsForJson.push(commitToPush);
+        if (commits[i].commitName == headCommit.commitName) {
+            headNumber = i;
+        }
     }
     let branchesForJson = [];
     for (let i of branches) {
@@ -545,6 +564,106 @@ function buildJSON() {
         }
         branchesForJson.push(branchToPush);
     }
-    let objects = new ItemJson(commitsForJson, branchesForJson);
+    let objects = new ItemJson(commitsForJson, branchesForJson, headNumber);
     return JSON.stringify(objects);
+}
+
+function exportSvg() {
+    let localG = svgObjects.get('local');
+    const initialCx = localG.cx(), initialCy = localG.cy();
+    localG.x(0).y(0);
+    let svgText = svgObjects.get('SVG').svg();
+    svgText = svgText.replaceAll('id="', 'id="task-');
+    svgText = svgText.replaceAll('url(#', 'url(#task-')
+    console.log(svgText);
+    localG.cx(initialCx).cy(initialCy);
+}
+
+function redrawByJson() {
+    let objects = JSON.parse(startJson);
+    if (objects.commits.length == 0)
+        return;
+    init([]);
+    for (let item of objects.commits)
+    {
+        if (!getBranchByName(item.branchCreator)) {
+            if (item.parentsNumbers.length != 0) {
+                let commitName = '';
+                for (let parent of objects.commits) {
+                    if (parent.ownNumber == item.parentsNumbers[0]) {
+                        commitName = parent.name;
+                        break;
+                    }
+                }
+                checkout([commitName]);
+            }
+            branch(item.branchCreator);
+        }
+        checkout([item.branchCreator]);
+        const parentsCount = item.parentsNumbers.length;
+        if (parentsCount == 1) {
+            const newCommit = commit();
+            item.name = newCommit.commitName;
+        }
+        else if (parentsCount == 2) {
+            let commitName = '';
+            for (let parent of objects.commits) {
+                if (parent.ownNumber == item.parentsNumbers[1]) {
+                    commitName = parent.name;
+                    break;
+                }
+            }
+            merge([commitName]);
+        }
+    }
+    for (let item of objects.branches) {
+        if (!getBranchByName(item.branchName)) {
+            for (let commit of objects.commits) {
+                if (commit.ownNumber == item.lastCommitNumber) {
+                    checkout([commit.name]);
+                    checkout(['-b', item.branchName]);
+                }
+            }
+        }
+    }
+}
+
+function markLesson(lessonId) {
+    let completedLessons = JSON.parse(localStorage.getItem('completedLessons'));
+    if (!completedLessons) {
+        completedLessons = [];
+    }
+    if (completedLessons.indexOf(lessonId) != -1)
+        return;
+    completedLessons.push(lessonId);
+    localStorage.setItem('completedLessons', JSON.stringify(completedLessons));
+}
+
+function getCommandTarget(targetName) {
+    let upMoves = 0;
+    while (targetName[targetName.length - 1] == '^') {
+        upMoves++;
+        targetName = targetName.slice(0, -1);
+    }
+    const tildaIndex = targetName.indexOf('~');
+    if (tildaIndex != -1) {
+        upMoves = parseInt(targetName.slice(tildaIndex+1));
+        targetName = targetName.slice(0, tildaIndex);
+    }
+    let target = getBranchByName(targetName);
+    if (!target)
+        target = getCommitByName(targetName);
+    if (upMoves != 0) {
+        if (target instanceof Branch)
+            if (target.branchName == 'HEAD')
+                target = headCommit;
+            else
+                target = target.lastCommit;
+        for (let i = 0; i < upMoves; i++) {
+            if (target.parents.length == 0)
+                break;
+            target = target.parents[0];
+        }
+    }
+    return target;
 }

@@ -71,7 +71,7 @@
     filter: brightness(0);
 }
 
-svg g text, svg g use {
+.tree-wrapper svg g text, .tree-wrapper svg g use {
     pointer-events: stroke;
     cursor: pointer;
 }
@@ -202,4 +202,52 @@ svg g, svg path {
     grid-column-end: 4;
     background: linear-gradient(20deg, #0A8270, #7CFF6B);
     justify-self: center;
+}
+
+.module img {
+    float: right;
+    display: block;
+    border-radius: 0.5rem;
+    max-width: 12rem;
+    margin: 1rem;
+}
+
+.window span.code {
+    background-color: #FFE2FF4D;
+    border: none;
+    border-radius: 0.3rem;
+    padding: 0.05rem 0.2rem;
+    margin: 0 0.1rem;
+    white-space: nowrap;
+}
+
+.window ul {
+    margin-left: 1rem;
+}
+
+#task-body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1.5rem;
+}
+
+#task-body svg {
+    margin: 3vh 0;
+    align-self: center;
+}
+
+*::-webkit-scrollbar {
+    height: 30px;
+    width: 30px;
+}
+
+*::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px 6px #FFE2FF43;
+    border: solid 10px #00000000;
+}
+
+*::-webkit-scrollbar-thumb {
+    box-shadow: inset 0 0 6px 6px #FFE2FF;
+    border: solid 10px #00000000;
 }
