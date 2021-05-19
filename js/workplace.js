@@ -119,6 +119,9 @@ function recognizeCommand(commandStr) {
         case 'rebase':
             rebase(commandBody);
             break;
+        case 'reset':
+            reset(commandBody);
+            break;
         default:
             pushText(`Команда git ${commandParts[1]} не поддерживается`);
     }
@@ -251,7 +254,20 @@ function branch(commandBody) {
     let branchName = '';
     if (commandBody.length == 3 && commandBody[0] == '-f' && commandBody[1] != 'HEAD') {
         const movingBranch = getBranchByName(commandBody[1]);
-        const target= getCommandTarget(commandBody[2]);
+        let target = getCommandTarget(commandBody[2]);
+        if (target instanceof Branch)
+            target = target.lastCommit;
+        let targetX = getXForBranchName(target.commitSvg), targetCy = getCyForBranchName(target.commitSvg);
+        movingBranch.branchNameSvg.x(targetX);
+        let cx = movingBranch.branchNameSvg.cx();
+        while (elementByPoint(cx, targetCy) != 'svg') {
+            targetCy += movingBranch.branchNameSvg.height() + defaults.verticalPadding;
+        }
+        movingBranch.branchNameSvg.animate().cy(targetCy);
+        if (headCommit.commitBranch.branchName != 'HEAD')
+            headCommit = target;
+        movingBranch.lastCommit = target;
+        return;
     }
     else if (commandBody.length == 1) {
         branchName = commandBody[0];
@@ -343,6 +359,8 @@ function checkout(commandBody) {
         headCommit = target;
         currentBranch = getBranchByName('HEAD');
     }
+
+    currentBranch.lastCommit = headCommit;
 }
 
 function getCommitByName(commitName) {
@@ -649,6 +667,8 @@ function getCommandTarget(targetName) {
     if (tildaIndex != -1) {
         upMoves = parseInt(targetName.slice(tildaIndex+1));
         targetName = targetName.slice(0, tildaIndex);
+        if (!upMoves)
+            upMoves = 1;
     }
     let target = getBranchByName(targetName);
     if (!target)
@@ -660,10 +680,15 @@ function getCommandTarget(targetName) {
             else
                 target = target.lastCommit;
         for (let i = 0; i < upMoves; i++) {
-            if (target.parents.length == 0)
-                break;
+            if (target.parents.length == 0) {
+                pushText(`Коммита по указанной ссылке не найдено`);
+            }
             target = target.parents[0];
         }
     }
     return target;
+}
+
+function reset(commandBody) {
+    branch(['-f', currentBranch.branchName, commandBody[0]]);
 }
