@@ -122,6 +122,9 @@ function recognizeCommand(commandStr) {
         case 'reset':
             reset(commandBody);
             break;
+        case 'revert':
+            revert(commandBody);
+            break;
         default:
             pushText(`Команда git ${commandParts[1]} не поддерживается`);
     }
@@ -690,5 +693,27 @@ function getCommandTarget(targetName) {
 }
 
 function reset(commandBody) {
+    if (!checkIsHeadExists()) {
+        return;
+    }
+    if (commandBody.length != 1) {
+        pushText('Команда git reset должна иметь 1 аргумент');
+        return;
+    }
     branch(['-f', currentBranch.branchName, commandBody[0]]);
+}
+
+function revert(commandBody) {
+    if (!checkIsHeadExists()) {
+        return;
+    }
+    if (commandBody.length != 1) {
+        pushText('Команда git revert должна иметь 1 аргумент');
+        return;
+    }
+    let target = getCommandTarget(commandBody[0]);
+    if (target instanceof Branch)
+        target = target.lastCommit;
+    let rebaseCommit = commit([], target.commitName+`'`);
+    rebaseCommit.commitSvg.node.querySelector('text').attributes.getNamedItem('font-size').value = defaults.smallFontSize;
 }
